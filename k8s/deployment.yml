@@ -1,31 +1,27 @@
-apiVersion: apps/v1
 kind: Deployment
+apiVersion: apps/v1
 metadata:
-  name: node-app-deployment
-  namespace: node-app
+  name: nodejs-deployment      #name of deployment
+  namespace: nodejs
   labels:
-    app: node-app
+    app: nodejs
+
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
-      app: node-app
-  template:
+      app: nodejs
+
+  template:            #details of pod
     metadata:
-      name: node-pod
-      namespace: node-app
+      name: nodejs-dep-pod    #name of pod
+      namespace: nodejs       #namespace in which I want to create the pod
       labels:
-        app: node-app
-    spec:
+        app: nodejs
+
+    spec:              #specs of our pod
       containers:
-        - name: node-container
-          image: trainwithshubham/node-app-batch-6
-          ports:
-            - containerPort: 8000
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "250m"
-            limits:
-              memory: "128Mi"
-              cpu: "500m"
+      - name: nodejs
+        image: shamelsk/node-to-do-app:latest
+        ports:
+        - containerPort: 8000

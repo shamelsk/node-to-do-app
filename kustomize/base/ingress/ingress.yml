@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: "nginx"
   rules:
-  - host: invalid.demo.trainwithshubham.com
+  - host: invalid.demo.shamel.com
     http:
       paths:
       - path: /
