@@ -2,6 +2,6 @@ version: '3.9'
 
 services:
   web:
-    image: shamelsk/node-to-do-app:latest
+    image: shamel1012/node-to-do-app:latest
     ports:
       - "8000:8000"
