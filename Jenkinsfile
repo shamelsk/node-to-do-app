@@ -1,37 +1,57 @@
-pipeline{
-    agent { label 'dev-server' }
-    environment {
-        APP_IMAGE = 'shamelsk/node-to-do-app:latest'
+@Library("Shared") _
+
+pipeline {
+    agent {
+        label "agent1"
     }
-    
-    stages{
-        stage("Code Clone"){
-            steps{
-                echo "Code Clone Stage"
-                git url: "https://github.com/shamelsk/node-to-do-app.git", branch: "main"
-            }
-        }
-        stage("Code Build & Test"){
-            steps{
-                echo "Code Build Stage"
-                sh "docker build -t ${env.APP_IMAGE} ."
-            }
-        }
-        stage("Push To DockerHub"){
-            steps{
-                withCredentials([usernamePassword(
-                    credentialsId:"dockerHubCreds",
-                    usernameVariable:"dockerHubUser", 
-                    passwordVariable:"dockerHubPass")]){
-                sh 'echo $dockerHubPass | docker login -u $dockerHubUser --password-stdin'
-                sh "docker push ${env.APP_IMAGE}"
+
+    stages {
+
+        stage("Code Fetch") {
+            steps {
+                script {
+                    clone(
+                        "https://github.com/shamelsk/node-to-do-app.git",
+                        "main"
+                    )
+                    echo "Fetched Code Successfully"
                 }
             }
         }
-        stage("Deploy"){
-            steps{
-                sh "docker compose down && docker compose up -d --build"
+
+        stage("Code Build") {
+            steps {
+                script {
+                    docker_build(
+                        imageName: "node-to-do-app"
+                    )
+                }
             }
         }
+
+        stage("Code Test") {
+            steps {
+                echo "Testing Code"
+            }
+        }
+
+        stage("Push to DockerHub") {
+            steps {
+                docker_push(
+                    sourceImage: "node-to-do-app",
+                    imageName: "shamel1012/node-to-do-app",
+                    credentialsId: "dockerHubCred"
+                )
+            }
+        }
+
+        stage("Code Deploy") {
+            steps {
+                echo "Deploying Code"
+                sh "docker compose down"
+                sh "docker compose up -d"
+            }
+        }
+
     }
 }
